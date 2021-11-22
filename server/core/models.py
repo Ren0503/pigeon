@@ -14,7 +14,7 @@ class Category(models.Model):
         return self.name
 
 
-class News(models.Model):
+class Article(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=200, null=True, blank=True)
     image = models.ImageField(null=True, blank=True,
@@ -33,7 +33,7 @@ class News(models.Model):
 
 
 class Comment(models.Model):
-    news = models.ForeignKey(News, on_delete=models.SET_NULL, null=True)
+    articles = models.ForeignKey(Article, on_delete=models.SET_NULL, null=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=200, null=True, blank=True)
     body = models.TextField(null=True, blank=True)

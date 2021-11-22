@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import News, Category, Comment
+from .models import Article, Category, Comment
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -45,11 +45,11 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class NewSerializer(serializers.ModelSerializer):
+class ArticleSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
-        model = News
+        model = Article
         fields = '__all__'
 
     def get_comments(self, obj):
@@ -59,11 +59,13 @@ class NewSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    articles = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Category
         fields = '__all__'
 
-    def get_news(self, obj):
-        news = obj.new_set.all()
-        serializer = NewSerializer(news, many=True)
+    def get_articles(self, obj):
+        articles = obj.article_set.all()
+        serializer = ArticleSerializer(articles, many=True)
         return serializer.data
