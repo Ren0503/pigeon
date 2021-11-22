@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from ckeditor.fields import RichTextField
-
+ 
 # Create your models here.
 
 
@@ -35,7 +35,7 @@ class Article(models.Model):
 
 
 class Comment(models.Model):
-    articles = models.ForeignKey(Article, on_delete=models.SET_NULL, null=True)
+    article = models.ForeignKey(Article, on_delete=models.SET_NULL, null=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=200, null=True, blank=True)
     body = models.TextField(null=True, blank=True)
