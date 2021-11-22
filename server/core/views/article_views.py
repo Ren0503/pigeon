@@ -116,7 +116,7 @@ def uploadImage(request):
     return Response('Image was uploaded')
 
 
-@api_view(['POST'])
+@api_view(['PUT'])
 @permission_classes([IsAdminUser])
 def updateArticle(request, pk):
     data = request.data
