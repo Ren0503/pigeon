@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.db.models import F
+from django.db.models import Q
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -18,8 +18,35 @@ def getArticles(request):
     if query == None:
         query = ''
 
-    articles = Article.objects.filter(
-        title__icontains=query).order_by('createdAt')
+    articles = Article.objects.filter(Q(title__icontains=query) & Q(
+        status__exact='public')).order_by('createdAt')
+
+    page = request.query_params.get('page')
+    paginator = Paginator(articles, 8)
+
+    try:
+        articles = paginator.page(page)
+    except PageNotAnInteger:
+        articles = paginator.page(1)
+    except EmptyPage:
+        articles = paginator.page(paginator.num_pages)
+
+    if page == None:
+        page = 1
+
+    page = int(page)
+    print('Page:', page)
+    serializer = ArticleSerializer(articles, many=True)
+    return Response({'articles': serializer.data, 'page': page, 'pages': paginator.num_pages})
+
+@api_view(['GET'])
+def getArticlesDraft(request):
+    query = request.query_params.get('keyword')
+    if query == None:
+        query = ''
+
+    articles = Article.objects.filter(Q(title__icontains=query) & Q(
+        status__exact='draft')).order_by('createdAt')
 
     page = request.query_params.get('page')
     paginator = Paginator(articles, 8)
@@ -42,27 +69,30 @@ def getArticles(request):
 
 @api_view(['GET'])
 def getArticleById(request, pk):
-    article = Article.objects.filter(_id=pk).update(views=F('views')+1)
+    article = Article.objects.get(_id=pk)
+    article.views += 1
+    article.save()
+
     serializer = ArticleSerializer(article, many=False)
     return Response(serializer.data)
 
 
 @api_view(['GET'])
-def getTopArticle(request, pk):
+def getTopArticle(request):
     articles = Article.objects.all().order_by('-views')[0:5]
     serializer = ArticleSerializer(articles, many=True)
     return Response(serializer.data)
 
 
 @api_view(['GET'])
-def getNewsArticle(request, pk):
+def getNewsArticle(request):
     articles = Article.objects.all().order_by('-createdAt')[0:5]
     serializer = ArticleSerializer(articles, many=True)
     return Response(serializer.data)
 
 
 @api_view(['GET'])
-def getHotArticle(request, pk):
+def getHotArticle(request):
     articles = Article.objects.all().order_by('-numComments')[0:5]
     serializer = ArticleSerializer(articles, many=True)
     return Response(serializer.data)
@@ -76,6 +106,7 @@ def createArticle(request):
 
     title = data['title']
     description = data['description']
+    status = data['status']
     image = data['image']
     body = data['body']
     category_id = data['category']
@@ -87,6 +118,7 @@ def createArticle(request):
         title=title,
         description=description,
         category=category,
+        status=status,
         image=image,
         body=body,
     )
@@ -128,6 +160,7 @@ def updateArticle(request, pk):
     article.description = data['description']
     article.category = data['category']
     article.body = data['body']
+    article.stauts = data['status']
 
     article.save()
     serializer = ArticleSerializer(article, many=False)

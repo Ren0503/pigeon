@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from ckeditor.fields import RichTextField
- 
+
 # Create your models here.
 
 
@@ -26,6 +26,7 @@ class Article(models.Model):
     description = models.TextField(null=True, blank=True)
     body = RichTextField(max_length=100000)
     numComments = models.IntegerField(null=True, blank=True, default=0)
+    status = models.CharField(max_length=200, null=True, default="draft")
     views = models.IntegerField(null=True, blank=True, default=0)
     createdAt = models.DateTimeField(auto_now_add=True)
     _id = models.AutoField(primary_key=True, editable=False)

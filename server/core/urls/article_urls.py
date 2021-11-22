@@ -3,6 +3,7 @@ from core.views import article_views as views
 
 urlpatterns = [
     path('', views.getArticles, name='articles'),
+    path('draft/', views.getArticlesDraft, name='articles-draft'),
 
     path('create/', views.createArticle, name="article-create"),
     path('upload/', views.uploadImage, name='image-upload'),
