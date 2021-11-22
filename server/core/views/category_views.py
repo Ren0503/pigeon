@@ -63,7 +63,7 @@ def updateCategory(request, pk):
     data = request.data
     category = Category.objects.get(_id=pk)
 
-    category.name = data.get('name')
+    category.name = data['name']
 
     category.save()
     serializer = CategorySerializer(category, many=False)

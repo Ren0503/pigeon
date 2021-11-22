@@ -5,7 +5,7 @@ urlpatterns = [
     path('', views.getArticles, name='articles'),
 
     path('create/', views.createArticle, name="article-create"),
-    path('upload', views.uploadImage, name='image-upload'),
+    path('upload/', views.uploadImage, name='image-upload'),
 
     path('top/', views.getTopArticle, name='top-articles'),
     path('hot/', views.getHotArticle, name='hot-articles'),

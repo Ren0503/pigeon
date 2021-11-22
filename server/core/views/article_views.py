@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from core.models import Article, Comment
+from core.models import Article, Category, Comment
 from core.serializers import ArticleSerializer
 
 from rest_framework import status
@@ -19,7 +19,7 @@ def getArticles(request):
         query = ''
 
     articles = Article.objects.filter(
-        title_icontains=query).order_by('createdAt')
+        title__icontains=query).order_by('createdAt')
 
     page = request.query_params.get('page')
     paginator = Paginator(articles, 8)
@@ -74,11 +74,13 @@ def createArticle(request):
     user = request.user
     data = request.data
 
-    title = data.get('title')
-    description = data.get('description')
-    category = data.get('category')
-    image = data.get('image')
-    body = data.get('body')
+    title = data['title']
+    description = data['description']
+    image = data['image']
+    body = data['body']
+    category_id = data['category']
+
+    category = Category.objects.get(_id=category_id)
 
     article = Article.objects.create(
         user=user,
@@ -122,10 +124,10 @@ def updateArticle(request, pk):
     data = request.data
     article = Article.objects.get(_id=pk)
 
-    article.title = data.get('title')
-    article.description = data.get('description')
-    article.category = data.get('category')
-    article.body = data.get('body')
+    article.title = data['title']
+    article.description = data['description']
+    article.category = data['category']
+    article.body = data['body']
 
     article.save()
     serializer = ArticleSerializer(article, many=False)

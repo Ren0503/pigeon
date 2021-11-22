@@ -5,7 +5,7 @@ urlpatterns = [
     path('', views.getCategories, name='categories'),
 
     path('create/', views.createCategory, name="category-create"),
-    path('upload', views.uploadImage, name='image-upload'),
+    path('upload/', views.uploadImage, name='image-upload'),
 
 
     path('<str:pk>/', views.getCategory, name="category"),
